@@ -22,7 +22,7 @@ var TIME_GAP = 10;
 var renderCloud = function (ctx, x, y, color) {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);
-}
+};
 
 // Находит максимальное время
 var getMaxTime = function (array) {
@@ -33,7 +33,7 @@ var getMaxTime = function (array) {
     }
   }
   return maxTime;
-}
+};
 
 window.renderStatistics = function (ctx, names, times) {
 
@@ -47,18 +47,18 @@ window.renderStatistics = function (ctx, names, times) {
   ctx.fillText('Ура вы победили!', CLOUD_X + TEXT_GAP, CLOUD_Y + TEXT_GAP);
   ctx.fillText('Список результатов:', CLOUD_X + TEXT_GAP, CLOUD_Y + TEXT_GAP + LINE_GAP);
 
-  //Добавляет гистограмму
+  // Добавляет гистограмму
   var maxTime = getMaxTime(times);
   for (var i = 0; i < names.length; i++) {
     // Добавляет имя
     ctx.fillStyle = TEXT_COLOR;
     ctx.fillText(names[i], CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH), NAME_Y);
     // Добавляет колонку
-    ctx.fillStyle = (names[i] == 'Вы') ? MY_BAR_COLOR : 'hsl(240, ' + Math.random().toFixed(2) * 100 + '%, 50%)';
+    ctx.fillStyle = (names[i] === 'Вы') ? MY_BAR_COLOR : 'hsl(240, ' + Math.random().toFixed(2) * 100 + '%, 50%)';
     ctx.fillRect(CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH), BAR_Y + MAX_BAR_HEIGHT - MAX_BAR_HEIGHT * times[i] / maxTime, BAR_WIDTH, MAX_BAR_HEIGHT * times[i] / maxTime);
     // Добавляет значение времени
     ctx.fillStyle = TEXT_COLOR;
     ctx.fillText(times[i].toFixed(0), CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH), BAR_Y + MAX_BAR_HEIGHT - MAX_BAR_HEIGHT * times[i] / maxTime - TIME_GAP);
   }
 
-}
+};
