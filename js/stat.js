@@ -15,7 +15,7 @@ var BAR_WIDTH = 40;
 var BAR_GAP = 50;
 var MY_BAR_COLOR = 'rgba(255, 0, 0, 1)';
 var NAME_Y = 265;
-var BAR_Y = 95;
+var MAX_BAR_Y = 95;
 var TIME_GAP = 10;
 
 // Рисует облако
@@ -50,15 +50,24 @@ window.renderStatistics = function (ctx, names, times) {
   // Добавляет гистограмму
   var maxTime = getMaxTime(times);
   for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    var time = times[i].toFixed(0);
+    var barX = CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH);
+    var barHeight = MAX_BAR_HEIGHT * time / maxTime;
+    var barY = MAX_BAR_Y + MAX_BAR_HEIGHT - barHeight;
     // Добавляет имя
     ctx.fillStyle = TEXT_COLOR;
-    ctx.fillText(names[i], CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH), NAME_Y);
-    // Добавляет колонку
-    ctx.fillStyle = (names[i] === 'Вы') ? MY_BAR_COLOR : 'hsl(240, ' + Math.random().toFixed(2) * 100 + '%, 50%)';
-    ctx.fillRect(CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH), BAR_Y + MAX_BAR_HEIGHT - MAX_BAR_HEIGHT * times[i] / maxTime, BAR_WIDTH, MAX_BAR_HEIGHT * times[i] / maxTime);
+    ctx.fillText(name, barX, NAME_Y);
+    // Добавляет цветную колонку
+    if (name === 'Вы') {
+      ctx.fillStyle = MY_BAR_COLOR;
+    } else {
+      ctx.fillStyle = 'hsl(240, ' + Math.random().toFixed(2) * 100 + '%, 50%)';
+    }
+    ctx.fillRect(barX, barY, BAR_WIDTH, barHeight);
     // Добавляет значение времени
     ctx.fillStyle = TEXT_COLOR;
-    ctx.fillText(times[i].toFixed(0), CLOUD_X + BAR_GAP + i * (BAR_GAP + BAR_WIDTH), BAR_Y + MAX_BAR_HEIGHT - MAX_BAR_HEIGHT * times[i] / maxTime - TIME_GAP);
+    ctx.fillText(time, barX, barY - TIME_GAP);
   }
 
 };
