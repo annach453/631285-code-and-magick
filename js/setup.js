@@ -169,15 +169,18 @@ var onSaveBtnEnterPress = function (evt) {
 };
 
 /* Открыте попап-окна */
-setupOpenBtn.addEventListener('click', function () {
-  openPopup();
-});
-
-setupOpenIcon.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
+var onSetupEvent = function () {
+  setupOpenBtn.addEventListener('click', function () {
     openPopup();
-  }
-});
+  });
+  setupOpenIcon.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openPopup();
+    }
+  });
+};
+
+onSetupEvent();
 
 /* Изменение цвета глаз волшебника */
 var onWizardEyesClick = function () {
