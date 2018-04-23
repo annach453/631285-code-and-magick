@@ -93,6 +93,7 @@ var setupOpenBtn = document.querySelector('.setup-open');
 var setupOpenIcon = document.querySelector('.setup-open-icon');
 var setupCloseBtn = setupPopup.querySelector('.setup-close');
 var userNameInput = setupPopup.querySelector('.setup-user-name');
+var userPic = setupPopup.querySelector('.setup-user-pic');
 var setupSaveBtn = setupPopup.querySelector('.setup-submit');
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
@@ -114,6 +115,9 @@ var fireballColors = [
   '#e848d5',
   '#e6e848'
 ];
+var artifactsCell = setupPopup.querySelector('.setup-artifacts-cell img');
+var shopElement = document.querySelector('.setup-artifacts-shop');
+var artifactsElement = document.querySelector('.setup-artifacts');
 
 var openPopup = function () {
   setupPopup.classList.remove('hidden');
@@ -125,6 +129,13 @@ var openPopup = function () {
   setupCloseBtn.addEventListener('click', closePopup);
   wizardEyes.addEventListener('click', onWizardEyesClick);
   fireball.addEventListener('click', onFireballClick);
+  userPic.addEventListener('mousedown', window.dialog.onUserPicMove);
+  setupPopup.addEventListener('mousedown', onArtifactMove);
+  shopElement.addEventListener('dragstart', onshopElementDragStart);
+  artifactsElement.addEventListener('dragover', onArtifactsElementDragOver);
+  artifactsElement.addEventListener('drop', onArtifactsElementDrop);
+  artifactsElement.addEventListener('dragenter', onArtifactsElementDragEnter);
+  artifactsElement.addEventListener('dragleave', onArtifactsElementDragLeave);
 };
 
 var closePopup = function () {
@@ -136,6 +147,16 @@ var closePopup = function () {
   setupCloseBtn.removeEventListener('click', closePopup);
   wizardEyes.removeEventListener('click', onWizardEyesClick);
   fireball.removeEventListener('click', onFireballClick);
+  userPic.removeEventListener('mousedown', window.dialog.onUserPicMove);
+  setupPopup.removeEventListener('mousedown', onArtifactMove);
+  shopElement.removeEventListener('dragstart', onshopElementDragStart);
+  artifactsElement.removeEventListener('dragover', onArtifactsElementDragOver);
+  artifactsElement.removeEventListener('drop', onArtifactsElementDrop);
+  artifactsElement.removeEventListener('dragenter', onArtifactsElementDragEnter);
+  artifactsElement.removeEventListener('dragleave', onArtifactsElementDragLeave);
+
+  setupPopup.style.top = '';
+  setupPopup.style.left = '';
 };
 
 /* Закрытие окна */
@@ -195,3 +216,88 @@ var onFireballClick = function () {
   fireball.style.backgroundColor = fireballColor;
   fireballInput.value = fireballColor;
 };
+
+/* Перетаскивание предметов */
+var makeArtifactsCellDraggable = function () {
+  for (var i = 0; i < artifactsCell.length; i++) {
+    artifactsCell[i].draggable = 'true';
+  }
+};
+
+var onArtifactMove = function (evt) {
+  for (var i = 0; i < artifactsCell.length; i++) {
+    if (artifactsCell[i] === evt.target) {
+      var currentArtifact = artifactsCell[i];
+      i = artifactsCell.length;
+    }
+  }
+
+  if (currentArtifact) {
+    evt.stopPropagation();
+    var startCoords = {
+      x: evt.clintX,
+      y: evt.clintY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      setupPopup.style.top = (setupPopup.offsetTop - shift.y) + 'px';
+      setupPopup.style.left = (setupPopup.offsetLeft - shift.x) + 'px';
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+};
+
+var onshopElementDragStart = function (evt) {
+  if (evt.target.tagName.toLowerCase() === 'img') {
+    draggedItem = evt.target;
+    evt.dataTransfer.setData('text/plain', evt.target.alt);
+    artifactsElement.style.outline = '2px dashed red';
+  }
+};
+
+var onArtifactsElementDragOver = function (evt) {
+  artifactsElement.style.outline = '2px dashed red';
+  evt.preventDefault();
+  return false;
+};
+
+var onArtifactsElementDrop = function (evt) {
+  evt.target.style.backgroundColor = '';
+  evt.target.appendChild(draggedItem);
+  artifactsElement.style.outline = '';
+  evt.preventDefault();
+};
+
+var onArtifactsElementDragEnter = function (evt) {
+  evt.target.style.backgroundColor = 'yellow';
+  evt.preventDefault();
+};
+
+var onArtifactsElementDragLeave = function (evt) {
+  evt.target.style.backgroundColor = '';
+  evt.preventDefault();
+};
+
+makeArtifactsCellDraggable();
+var draggedItem = null;
