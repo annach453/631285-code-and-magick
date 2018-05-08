@@ -1,50 +1,54 @@
 'use strict';
-var setupPopup = document.querySelector('.setup');
-var userUploadAvatarInput = setupPopup.querySelector('.upload input');
 
+(function () {
 
-/* Перетаскивание */
-var onUserPicMove = function (evt) {
-  evt.preventDefault();
-  var mouseMoved = false;
-  var startCoords = {
-    x: evt.clintX,
-    y: evt.clintY
-  };
+  var setupPopup = document.querySelector('.setup');
+  var userUploadAvatarInput = setupPopup.querySelector('.upload input');
 
-  var onMouseMove = function (moveEvt) {
-    moveEvt.preventDefault();
-
-    mouseMoved = true;
-    var shift = {
-      x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
+  /* Перетаскивание */
+  var onUserPicMove = function (evt) {
+    evt.preventDefault();
+    var mouseMoved = false;
+    var startCoords = {
+      x: evt.clintX,
+      y: evt.clintY
     };
 
-    startCoords = {
-      x: moveEvt.clientX,
-      y: moveEvt.clientY
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      mouseMoved = true;
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      setupPopup.style.top = (setupPopup.offsetTop - shift.y) + 'px';
+      setupPopup.style.left = (setupPopup.offsetLeft - shift.x) + 'px';
     };
 
-    setupPopup.style.top = (setupPopup.offsetTop - shift.y) + 'px';
-    setupPopup.style.left = (setupPopup.offsetLeft - shift.x) + 'px';
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      if (!mouseMoved) {
+        userUploadAvatarInput.click();
+      }
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
-  var onMouseUp = function (upEvt) {
-    upEvt.preventDefault();
-
-    if (!mouseMoved) {
-      userUploadAvatarInput.click();
-    }
-
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
+  window.dialog = {
+    'onUserPicMove': onUserPicMove
   };
 
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
-};
-
-window.dialog = {
-  'onUserPicMove': onUserPicMove
-};
+})();
